@@ -3,11 +3,12 @@
   "serviceConfiguration": {
     "apiName": "amplifyappzjc",
     "serviceName": "AppSync",
-    "gqlSchemaPath": "/tmp/amplify-24571e2d-e019-4100-9d79-e88d3735215a/amplify/backend/api/amplifyappzjc/schema.graphql",
+    "gqlSchemaPath": "/Users/dasign/Documents/GitHub/amplifyappzjc/amplify/backend/api/amplifyappzjc/schema.graphql",
     "defaultAuthType": {
       "mode": "API_KEY",
-      "keyDescription": "api key description",
-      "expirationTime": 30
+      "expirationTime": 7,
+      "apiKeyExpirationDate": "2022-02-19T18:19:18.323Z",
+      "keyDescription": "api key description"
     },
     "conflictResolution": {
       "defaultResolutionStrategy": {

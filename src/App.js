@@ -8,7 +8,7 @@ import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation } fr
 const initialFormState = { name: '', description: '' }
 
 function App() {
-  const [notes, setNotes] = useState([]);
+  const [todos, setTodos] = useState([]);
   const [formData, setFormData] = useState(initialFormState);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ function App() {
 
   async function fetchTodo() {
     const apiData = await API.graphql({ query: listTodos });
-    const todoFromAPI = apiData.data.listNotes.items;
+    const todoFromAPI = apiData.data.listTodos.items;
     await Promise.all(todoFromAPI.map(async todo => {
       if (todo.image) {
         const image = await Storage.get(todo.image);
@@ -25,7 +25,7 @@ function App() {
       }
       return todo;
     }))
-    setNotes(apiData.data.listTodos.items);
+    setTodos(apiData.data.listTodos.items);
   }
 
   async function onChange(e) {
@@ -43,43 +43,43 @@ function App() {
       const image = await Storage.get(formData.image);
       formData.image = image;
     }
-    setNotes([ ...notes, formData ]);
+    setTodos([ ...todos, formData ]);
     setFormData(initialFormState);
   }
 
   async function deleteTodo({ id }) {
-    const newNotesArray = notes.filter(note => note.id !== id);
-    setNotes(newNotesArray);
+    const newTodosArray = todos.filter(todo => todo.id !== id);
+    setTodos(newTodosArray);
     await API.graphql({ query: deleteTodoMutation, variables: { input: { id } }});
   }
 
   return (
     <div className="App">
-      <h1>My Notes App</h1>
+      <h1>My Todos App</h1>
       <input
         onChange={e => setFormData({ ...formData, 'name': e.target.value})}
-        placeholder="Note name"
+        placeholder="Todo name"
         value={formData.name}
       />
       <input
         onChange={e => setFormData({ ...formData, 'description': e.target.value})}
-        placeholder="Note description"
+        placeholder="Todo description"
         value={formData.description}
       />
       <input
         type="file"
         onChange={onChange}
       />
-      <button onClick={createTodo}>Create Note</button>
+      <button onClick={createTodo}>Create Todo</button>
       <div style={{marginBottom: 30}}>
         {
-          notes.map(note => (
-            <div key={note.id || note.name}>
-              <h2>{note.name}</h2>
-              <p>{note.description}</p>
-              <button onClick={() => deleteTodo(note)}>Delete note</button>
+          todos.map(todo => (
+            <div key={todo.id || todo.name}>
+              <h2>{todo.name}</h2>
+              <p>{todo.description}</p>
+              <button onClick={() => deleteTodo(todo)}>Delete todo</button>
               {
-                note.image && <img src={note.image} style={{width: 400}} />
+                todo.image && <img src={todo.image} style={{width: 400}} />
               }
             </div>
           ))
