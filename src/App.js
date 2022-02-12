@@ -27,6 +27,7 @@ function App() {
     }))
     setNotes(apiData.data.listTodos.items);
   }
+
   async function onChange(e) {
     if (!e.target.files[0]) return
     const file = e.target.files[0];
