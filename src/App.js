@@ -8,6 +8,8 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <h1>Hello from V2</h1>
+        <p>Now deployed on https://www.jiachzha.top/</p>
+        <p>DNS Service Provider: Aliyun</p>
       </header>
     </div>
   );
