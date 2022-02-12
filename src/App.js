@@ -1,29 +1,6 @@
-
-// import React from 'react';
-// import logo from './logo.svg';
-// import './App.css';
-// import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react'
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header>
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <h1>We now have Auth!</h1>
-//         <p>Now deployed on https://www.jiachzha.top/</p>
-//         <p>DNS Service Provider: Aliyun</p>
-//       </header>
-//       <AmplifySignOut />
-//     </div>
-//   );
-// }
-
-// export default withAuthenticator(App);
-
-
+import { API, Storage } from 'aws-amplify';
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { API } from 'aws-amplify';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import { listTodos } from './graphql/queries';
 import { createTodo as createTodoMutation, deleteTodo as deleteTodoMutation } from './graphql/mutations';
@@ -40,12 +17,31 @@ function App() {
 
   async function fetchTodo() {
     const apiData = await API.graphql({ query: listTodos });
+    const todoFromAPI = apiData.data.listNotes.items;
+    await Promise.all(todoFromAPI.map(async todo => {
+      if (todo.image) {
+        const image = await Storage.get(todo.image);
+        todo.image = image;
+      }
+      return todo;
+    }))
     setNotes(apiData.data.listTodos.items);
+  }
+  async function onChange(e) {
+    if (!e.target.files[0]) return
+    const file = e.target.files[0];
+    setFormData({ ...formData, image: file.name });
+    await Storage.put(file.name, file);
+    fetchTodo();
   }
 
   async function createTodo() {
     if (!formData.name || !formData.description) return;
     await API.graphql({ query: createTodoMutation, variables: { input: formData } });
+    if (formData.image) {
+      const image = await Storage.get(formData.image);
+      formData.image = image;
+    }
     setNotes([ ...notes, formData ]);
     setFormData(initialFormState);
   }
@@ -69,6 +65,10 @@ function App() {
         placeholder="Note description"
         value={formData.description}
       />
+      <input
+        type="file"
+        onChange={onChange}
+      />
       <button onClick={createTodo}>Create Note</button>
       <div style={{marginBottom: 30}}>
         {
@@ -77,6 +77,9 @@ function App() {
               <h2>{note.name}</h2>
               <p>{note.description}</p>
               <button onClick={() => deleteTodo(note)}>Delete note</button>
+              {
+                note.image && <img src={note.image} style={{width: 400}} />
+              }
             </div>
           ))
         }
