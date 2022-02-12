@@ -35,10 +35,10 @@ function App() {
   const [formData, setFormData] = useState(initialFormState);
 
   useEffect(() => {
-    fetchNotes();
+    fetchTodo();
   }, []);
 
-  async function fetchNotes() {
+  async function fetchTodo() {
     const apiData = await API.graphql({ query: listTodos });
     setNotes(apiData.data.listTodos.items);
   }
